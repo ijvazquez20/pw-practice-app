@@ -174,3 +174,9 @@ test('Reusing Locators', async ({ page }) => {
     await expect(emailField).toHaveValue('test@test.com')
     
 })
+
+
+test ('Extracting Values', async ({ page }) => {
+
+})
+
