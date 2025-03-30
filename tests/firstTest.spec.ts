@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "@playwright/test"; // Import from the correct location
 
 /* Base test Function 
 test('The first Test.', () => {
@@ -177,6 +177,25 @@ test('Reusing Locators', async ({ page }) => {
 
 
 test ('Extracting Values', async ({ page }) => {
+    // Single text value
+    const basicForm = page.locator('nb-card').filter({ hasText: "Basic Form" })
+    const buttonText = await basicForm.locator('button').textContent()
+    expect(buttonText).toEqual('Submit')
+
+    // All text values
+     const allRadioButtonLabels = await page.locator('nb-radio').allTextContents()
+     expect(allRadioButtonLabels).toContain('Option 1')
+
+    // Input text value. (A value that was entered by the user and doesn't exist locally on the page.)
+    const emailField = basicForm.getByRole('textbox', { name: "Email" })
+    await emailField.fill('test@test.com')
+
+    const emailValue = await emailField.inputValue() // inputValue() gets the value that was entered on the field.
+    expect(emailValue).toEqual('test@test.com')
+    
+    // Attribute value. (In this case, the 'placeholder' attribute.)
+    const placeholderValue = await emailField.getAttribute( 'placeholder')
+    expect (placeholderValue).toEqual('Email')
+    
 
 })
-
