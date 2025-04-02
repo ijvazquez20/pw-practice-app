@@ -44,3 +44,16 @@ test ('Alternative Waits', async ({ page }) => {
     const successMessageText = await successMessage.textContent();    
     expect(successMessageText).toContain('Data loaded with AJAX get request.');
 })
+
+test ('Timeouts', async ({ page }) => {
+
+    // To define Timeouts for each test, you can use the 'timeout' tag inside the defineConfig function in the playwright.config.ts file.
+    // You can override the timeout for a specific test using the 'test.setTimeout(xxxxx)' method.
+    // You can also use test.slow() to multiply the timeout by a factor of 3.
+
+    // To define the Global Timeout, you can use the 'globalTimeout' tag inside the defineConfig function in the playwright.config.ts file.
+    // To define the Tiemeouts for an assertion, you can use the 'timeout' tag inside the expect tag method. expect:{timeout: x}.
+
+    const successMessage = page.locator('.bg-success');
+    await successMessage.click();
+})
