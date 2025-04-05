@@ -71,3 +71,43 @@ test("Checkboxes", async ({ page }) => {
     }
 
 })
+
+test ("Lists and Dropdowns", async ({ page }) => {
+    const dropdownMenu = page.locator('ngx-header nb-select')
+    await dropdownMenu.click()
+
+    /*
+    page.getByRole("list") // Used for <ul> tags.
+    page.getByRole("listitem") // Used for <li> tags.
+
+    In this example, there is a <ul> but there are no <li>, instead the page has <nb-option> elements
+    Since there are not <li>, instead of using a Role Locator, we use a regular Locator. 
+    */
+
+    // First we get the parent <ul> by Role, then get all the <nb-option> children
+    const optionList = page.getByRole("list").locator('nb-option')
+
+    // We validate the optionList contains all the expected values.
+    await expect(optionList).toHaveText(["Light", "Dark", "Cosmic", "Corporate"])
+
+    // Select the "Cosmic" option and click() on it.
+    await optionList.filter({hasText: "Cosmic"}).click()
+
+    // Checks the background color of the Header in order to verify the "Cosmic" option was selected.
+    const header = page.locator('nb-layout-header')
+    await expect(header).toHaveCSS('background-color', 'rgb(50, 50, 89)')
+
+    // Thi is an example of how you would iterate thru all the colors on the dropdown.
+    // const colors = {
+    //     "Light": "rgb(10, 10, 10)",
+    //     "Dark": "rgb(20, 20, 20)"
+    // }
+    
+    // // console.log(colors)
+    
+    // for(const color in colors){
+    //     console.log(color)
+    //     console.log(colors[color])
+    // }
+
+})
