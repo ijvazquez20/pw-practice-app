@@ -111,3 +111,29 @@ test ("Lists and Dropdowns", async ({ page }) => {
     // }
 
 })
+
+test ("Tooltips", async ({ page }) => {
+    await page.getByText("Modal & Overlays").click()
+    await page.getByText("Tooltip").click()  
+
+    // Gets the Card element that contains the button that holds the tooltip
+    const tooltipCard = page.locator('nb-card', { hasText: "Tooltip Placements" })
+
+    // Hover over the TOP button to show the tooltip
+    await tooltipCard.getByRole('button', {name: "Top"}).hover()
+
+    // This would be valid if the'tooltip' Role existed. In this case we have the 'nb-tooltip' Locator.
+    //page.getByRole('tooltip') 
+
+    // Gets the 'nb-tooltip' Locator
+    const tooltip = await page.locator('nb-tooltip').textContent()
+
+    // This doesn't work because the tooltip is not inside the tooltipCard. Is in an overlay.
+    //const tooltip2 = await tooltipCard.locator('nb-tooltip').textContent()
+
+    // Verify that the tooltip has the correct text.
+    expect(tooltip).toContain("This is a tooltip")
+
+
+
+})
