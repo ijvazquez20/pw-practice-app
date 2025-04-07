@@ -147,9 +147,53 @@ test("Dialog Boxes", async ({ page }) => {
     })
 
     // Finds the 'Trash' icon button of the first row and clicks it.
-    await page.getByRole('table').locator('tr', {hasText: "mdo@gmail.com"}).locator('.nb-trash').click()
+    await page.getByRole('table').locator('tr', { hasText: "mdo@gmail.com" }).locator('.nb-trash').click()
 
     // Validates the deleted row is no longer there by checking the first row on the table.
     await expect(page.locator('table tr').first()).not.toHaveText("mdo@gmail.com")
+
+})
+
+test("Web Tables", async ({ page }) => {
+    await page.getByText("Tables & Data").click()
+    await page.getByText("Smart Table").click()
+
+    // 1) Get one entire row by unique locator(email) on that row
+    const targetRow = page.getByRole('row', { name: "twitter@outlook.com" })
+
+    // Click on the Edit button of that row
+    await targetRow.locator('.nb-edit').click()
+
+    // Gets the Input field by the "Age" placeholder text. Clears it and a fills in "35"
+    await page.locator('input-editor').getByPlaceholder("Age").clear()
+    await page.locator('input-editor').getByPlaceholder("Age").fill("35")
+
+    // Clicks on the Checkmark button to save the changes.
+    await page.locator('.nb-checkmark').click()
+
+    // 2) Get one row based on the value (not unique) of an specific column field
+    // Selects the "2" pagination button to move to the second page
+    await page.locator('.ng2-smart-pagination-nav').locator('li', { hasText: "2" }).click()
+
+    const targetRowByID =
+        page.getByRole('row', { name: "11" }) // This returns two rows in this case, so we need to filter it.
+            .filter({
+                has: page.locator('td') // On all the columns of each row
+                    .nth(1) // On the second column(ID) of the row (because the first one is the "Actions" Column.)
+                    .getByText("11") // Finds the row that has "11" 
+            })
+    
+    // Click on the Edit button of that row
+    await targetRowByID.locator('.nb-edit').click()
+
+    // Gets the Input field by the "Age" placeholder text. Clears it and a fills in "35"
+    await page.locator('input-editor').getByPlaceholder("E-mail").clear()
+    await page.locator('input-editor').getByPlaceholder("E-mail").fill("test@mail.com")
+
+    // Clicks on the Checkmark button to save the changes.
+    await page.locator('.nb-checkmark').click()
+
+    // Verify the email was changed correctly.
+    expect(targetRowByID.locator('td').nth(5)).toHaveText("test@mail.com")
 
 })
