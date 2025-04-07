@@ -47,32 +47,32 @@ test.describe("Form Layouts Page", () => {
         expect(await usingTheGridForm.getByRole("radio", { name: "Option 1" }).isChecked()).toBeFalsy()  // Assert if the radio button 1 is unchecked.
         expect(await usingTheGridForm.getByRole("radio", { name: "Option 2" }).isChecked()).toBeTruthy()  // Assert if the radio button 1 is unchecked.
     })
-  
+
 })
 
 test("Checkboxes", async ({ page }) => {
     await page.getByText("Modal & Overlays").click()
-    await page.getByText("Toastr").click()  
+    await page.getByText("Toastr").click()
 
     // click() simply clicks the element.
-    await page.getByRole("checkbox", {name: "Hide on Click"}).click({force: true})
+    await page.getByRole("checkbox", { name: "Hide on Click" }).click({ force: true })
 
     // check() makes sure it is checked. It check the status first. If its already checked it does nothing.
-    await page.getByRole("checkbox", {name: "Prevent arising of duplicate toast"}).check({force: true})
+    await page.getByRole("checkbox", { name: "Prevent arising of duplicate toast" }).check({ force: true })
 
     // uncheck() is the same as check() but with uncheck.
-    await page.getByRole("checkbox", {name: "Hide on Click"}).uncheck({force: true}) 
+    await page.getByRole("checkbox", { name: "Hide on Click" }).uncheck({ force: true })
 
     // Check all checkboxes on the page
     const allBoxes = page.getByRole("checkbox") // Gets all checkboxes and puts then in a const.
-    for(const box of await allBoxes.all()) {    // Loops thru all of them and checks every single one.
-        await box.check({force: true})
+    for (const box of await allBoxes.all()) {    // Loops thru all of them and checks every single one.
+        await box.check({ force: true })
         expect(await box.isChecked()).toBeTruthy() // Validates that the checkoxes are checked.
     }
 
 })
 
-test ("Lists and Dropdowns", async ({ page }) => {
+test("Lists and Dropdowns", async ({ page }) => {
     const dropdownMenu = page.locator('ngx-header nb-select')
     await dropdownMenu.click()
 
@@ -91,7 +91,7 @@ test ("Lists and Dropdowns", async ({ page }) => {
     await expect(optionList).toHaveText(["Light", "Dark", "Cosmic", "Corporate"])
 
     // Select the "Cosmic" option and click() on it.
-    await optionList.filter({hasText: "Cosmic"}).click()
+    await optionList.filter({ hasText: "Cosmic" }).click()
 
     // Checks the background color of the Header in order to verify the "Cosmic" option was selected.
     const header = page.locator('nb-layout-header')
@@ -102,9 +102,9 @@ test ("Lists and Dropdowns", async ({ page }) => {
     //     "Light": "rgb(10, 10, 10)",
     //     "Dark": "rgb(20, 20, 20)"
     // }
-    
+
     // // console.log(colors)
-    
+
     // for(const color in colors){
     //     console.log(color)
     //     console.log(colors[color])
@@ -112,15 +112,15 @@ test ("Lists and Dropdowns", async ({ page }) => {
 
 })
 
-test ("Tooltips", async ({ page }) => {
+test("Tooltips", async ({ page }) => {
     await page.getByText("Modal & Overlays").click()
-    await page.getByText("Tooltip").click()  
+    await page.getByText("Tooltip").click()
 
     // Gets the Card element that contains the button that holds the tooltip
     const tooltipCard = page.locator('nb-card', { hasText: "Tooltip Placements" })
 
     // Hover over the TOP button to show the tooltip
-    await tooltipCard.getByRole('button', {name: "Top"}).hover()
+    await tooltipCard.getByRole('button', { name: "Top" }).hover()
 
     // This would be valid if the'tooltip' Role existed. In this case we have the 'nb-tooltip' Locator.
     //page.getByRole('tooltip') 
@@ -134,6 +134,22 @@ test ("Tooltips", async ({ page }) => {
     // Verify that the tooltip has the correct text.
     expect(tooltip).toContain("This is a tooltip")
 
+})
 
+test("Dialog Boxes", async ({ page }) => {
+    await page.getByText("Tables & Data").click()
+    await page.getByText("Smart Table").click()
+
+    // In order to handle a Browser Dialog Box, we need to add a listener [.on()] to the browser before the Box appears.
+    page.on('dialog', async dialog => {
+        expect(dialog.message()).toEqual('Are you sure you want to delete?') // Validates the Box is the correct one.
+        await dialog.accept() // Accepts the Box.
+    })
+
+    // Finds the 'Trash' icon button of the first row and clicks it.
+    await page.getByRole('table').locator('tr', {hasText: "mdo@gmail.com"}).locator('.nb-trash').click()
+
+    // Validates the deleted row is no longer there by checking the first row on the table.
+    await expect(page.locator('table tr').first()).not.toHaveText("mdo@gmail.com")
 
 })
