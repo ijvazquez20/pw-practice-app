@@ -182,7 +182,7 @@ test("Web Tables", async ({ page }) => {
                     .nth(1) // On the second column(ID) of the row (because the first one is the "Actions" Column.)
                     .getByText("11") // Finds the row that has "11" 
             })
-    
+
     // Click on the Edit button of that row
     await targetRowByID.locator('.nb-edit').click()
 
@@ -196,4 +196,24 @@ test("Web Tables", async ({ page }) => {
     // Verify the email was changed correctly.
     expect(targetRowByID.locator('td').nth(5)).toHaveText("test@mail.com")
 
+    // 3) Test Filter functionality
+    const ages = ["20", "30", "40", "200"] // Array of ages we want to look up
+
+    for (const age of ages) { // Cycles thru each 'age' in the array
+        await page.locator('input-filter').getByPlaceholder("Age").clear() // Gets the Input field by the "Age" placeholder text and clears it.
+        await page.locator('input-filter').getByPlaceholder("Age").fill(age) // Fills in the current 'age' value in the loop.
+        await page.waitForTimeout(500) // Implicit wait to force Playwright to wait for the filter to be applied.
+
+        const ageRows = page.locator('tbody tr') // Get all the rows after the filter is applied. i.e: the results.
+
+        for (const row of await ageRows.all()) { // Cycles thru each row
+            const cellValue = await row.locator('td').last().textContent() // Gets the last cell value of each row. (In this case, the 'age').
+
+            if (age == "200") { // If the 'age' use to filter is 200 and has no results.
+                expect(cellValue).toContain("No data found") // We verify the message is displayed.
+            } else {
+                expect(cellValue).toEqual(age) // Else, we verify the current 'age' is displayed.
+            }
+        }
+    }
 })
