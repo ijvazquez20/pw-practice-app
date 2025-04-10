@@ -226,19 +226,20 @@ test("Datepicker", async ({ page }) => {
     const calendarInputField = page.getByPlaceholder("Form Picker")
     await calendarInputField.click()
 
-    let date = new Date()
-    date.setDate(date.getDate() + 100)
+    let date = new Date() 
+    date.setDate(date.getDate() + 100) // Gets the day of the month, i.e: April [10] and adds 100 days to it.
 
-    const expectedDate = date.getDate().toString()
-    const expectedMonthShort = date.toLocaleString('En-US', { month: 'short' })
-    const expectedMonthLong = date.toLocaleString('En-US', { month: 'long' })
-    const expectedYear = date.getFullYear().toString()
-    const dateToAssert = `${expectedMonthShort} ${expectedDate}, ${expectedYear}`
+    const expectedDate = date.getDate().toString() // Make JUST THE DAY, not the entire date, into a String. [10]
+    const expectedMonthShort = date.toLocaleString('En-US', { month: 'short' }) // Gets the Month of the date, abreviated. [Apr]
+    const expectedMonthLong = date.toLocaleString('En-US', { month: 'long' }) // Gets the Month of the date, full name. [April]
+    const expectedYear = date.getFullYear().toString() // Gets the Year of the date. [2025]
+    const dateToAssert = `${expectedMonthShort} ${expectedDate}, ${expectedYear}` // Puts them all together: Apr 10, 2025
     //console.log(dateToAssert)
 
-    let calendarMonthAndYear = await page.locator('nb-calendar-view-mode').textContent()
-    const expectedMonthAndYear = ` ${expectedMonthLong} ${expectedYear} `
+    let calendarMonthAndYear = await page.locator('nb-calendar-view-mode').textContent() // Gets the element on the calendar
+    const expectedMonthAndYear = ` ${expectedMonthLong} ${expectedYear} ` // Creates a const of the full month and year: April 2025
 
+    // If the current month displayed on the Calendar doesn't match the month we set on the 'date' variable, it clicks the > to move to the next month
     while (!calendarMonthAndYear.includes(expectedMonthAndYear)) {
         await page.locator('nb-calendar-pageable-navigation [data-name="chevron-right"]').click()
         calendarMonthAndYear = await page.locator('nb-calendar-view-mode').textContent()
