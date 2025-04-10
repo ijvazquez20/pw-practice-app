@@ -217,3 +217,38 @@ test("Web Tables", async ({ page }) => {
         }
     }
 })
+
+test("Datepicker", async ({ page }) => {
+    await page.getByText("Forms").click()
+    await page.getByText("Datepicker").click()
+
+    // Find the Calendar Input field and click on it to make the Calendar show up.
+    const calendarInputField = page.getByPlaceholder("Form Picker")
+    await calendarInputField.click()
+
+    let date = new Date()
+    date.setDate(date.getDate() + 100)
+
+    const expectedDate = date.getDate().toString()
+    const expectedMonthShort = date.toLocaleString('En-US', { month: 'short' })
+    const expectedMonthLong = date.toLocaleString('En-US', { month: 'long' })
+    const expectedYear = date.getFullYear().toString()
+    const dateToAssert = `${expectedMonthShort} ${expectedDate}, ${expectedYear}`
+    //console.log(dateToAssert)
+
+    let calendarMonthAndYear = await page.locator('nb-calendar-view-mode').textContent()
+    const expectedMonthAndYear = ` ${expectedMonthLong} ${expectedYear} `
+
+    while (!calendarMonthAndYear.includes(expectedMonthAndYear)) {
+        await page.locator('nb-calendar-pageable-navigation [data-name="chevron-right"]').click()
+        calendarMonthAndYear = await page.locator('nb-calendar-view-mode').textContent()
+    }
+
+    // Searches for 'class' first in order to avoid selecting a date from a previous month.
+    // {exact: true} is used to look for the exact match and avoid selecting other elements that contain "1", like 10, 11, 12, etc.
+    await page.locator('[class="day-cell ng-star-inserted"]').getByText(expectedDate, { exact: true }).click()
+
+    // Verify the selected date is displayed correctly on the field.
+    await expect(calendarInputField).toHaveValue(dateToAssert)
+
+})
