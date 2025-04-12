@@ -226,7 +226,7 @@ test("Datepicker", async ({ page }) => {
     const calendarInputField = page.getByPlaceholder("Form Picker")
     await calendarInputField.click()
 
-    let date = new Date() 
+    let date = new Date()
     date.setDate(date.getDate() + 100) // Gets the day of the month, i.e: April [10] and adds 100 days to it.
 
     const expectedDate = date.getDate().toString() // Make JUST THE DAY, not the entire date, into a String. [10]
@@ -252,4 +252,37 @@ test("Datepicker", async ({ page }) => {
     // Verify the selected date is displayed correctly on the field.
     await expect(calendarInputField).toHaveValue(dateToAssert)
 
+})
+
+test("Sliders", async ({ page }) => {
+    
+    const tempBox = page.locator('[tabtitle="Temperature"] ngx-temperature-dragger') // Finds the box of the slider.
+    await tempBox.scrollIntoViewIfNeeded() // Scrolls the box into view.
+    
+    // 1) Update Slider Attributes
+    const tempGauge = page.locator('[tabtitle="Temperature"] ngx-temperature-dragger circle') // Finds the slider element by its class name and the tab title.
+
+    // The slider is a circle element. We need to set the attributes of the circle element to change the value of the slider.
+    await tempGauge.evaluate(node => {
+        // Set the attributes of the slider to 232.630.
+        node.setAttribute("cx", "232.630")
+        node.setAttribute("cy", "232.630")
+    })
+
+    await tempGauge.click() // Clicks on the slider to make sure the value is set.
+    await expect(tempBox).toContainText("30") // Verifies the value of the slider is 30.
+
+    // 2) Simulate Mouse movement
+
+    const box = await tempBox.boundingBox()
+    const x = box.x + box.width / 2 // Gets the center of the box.
+    const y = box.y + box.height / 2 // Gets the center of the box.
+
+    await page.mouse.move(x, y) // Moves the mouse to the center of the box.
+    await page.mouse.down() // Presses the mouse down.
+    await page.mouse.move(x - 100, y) // Moves the mouse to the right by 100 pixels.
+    await page.mouse.move(x - 100, y + 100) // Moves the mouse down by 100 pixels.
+    await page.mouse.up() // Releases the mouse.
+
+    await expect(tempBox).toContainText("13") // Verifies the value of the slider is 30.
 })
