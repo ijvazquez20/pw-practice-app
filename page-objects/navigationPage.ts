@@ -37,7 +37,7 @@ export class NavigationPage {
     private async selectGroupMenuItem(groupItemTitle: string) {
         const groupMenuItem = this.page.getByTitle(groupItemTitle)
         const expandedState = await groupMenuItem.getAttribute('aria-expanded')
-        if (expandedState === 'false') {
+        if (expandedState == 'false') {
             await groupMenuItem.click()
         }
     }

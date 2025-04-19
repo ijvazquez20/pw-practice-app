@@ -24,7 +24,7 @@ export class formLayoutsPage {
      * @param checkbox - True or false.
      */
     async submitInlineFormWithNameEmailAndCheckbox(name: string, email: string, checkbox: boolean){
-        const usingInlineForm = this.page.locator('nb-card', { hasText: "Using the Grid" })
+        const usingInlineForm = this.page.locator('nb-card', { hasText: "Inline form" })
 
         await usingInlineForm.getByRole('textbox', { name: "Jane Doe" }).fill(name)
         await usingInlineForm.getByRole('textbox', { name: "Email" }).fill(email)
